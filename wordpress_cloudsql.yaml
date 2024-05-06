@@ -5,7 +5,7 @@ metadata:
   labels:
     app: wordpress
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: wordpress
@@ -35,16 +35,16 @@ spec:
             - containerPort: 80
               name: wordpress
           volumeMounts:
-            - name: nfs-pv
+            - name: podpvc
               mountPath: /var/www/html
-        # Change reto-4-422404:us-central1:mysql-wordpress-instance here to include your GCP
+        # Change reto4-422405:us-central1:mysql-wordpress-instance here to include your GCP
         # project, the region of your Cloud SQL instance and the name
         # of your Cloud SQL instance. The format is
         # ::
         - name: cloudsql-proxy
           image: gcr.io/cloudsql-docker/gce-proxy:1.33.2
           command: ["/cloud_sql_proxy",
-                    "-instances=reto-4-422404:us-central1:mysql-wordpress-instance=tcp:3306",
+                    "-instances=reto4-422405:us-central1:mysql-wordpress-instance=tcp:3306",
                     # If running on a VPC, the Cloud SQL proxy can connect via Private IP. See:
                     # https://cloud.google.com/sql/docs/mysql/private-ip for more info.
                     # "-ip_address_types=PRIVATE",
@@ -57,10 +57,10 @@ spec:
               mountPath: /secrets/cloudsql
               readOnly: true
       volumes:
-        - name: nfs-pv 
+        - name: podpvc
           persistentVolumeClaim:
-            claimName: nfs
+            claimName: podpvc
+            readOnly: false
         - name: cloudsql-instance-credentials
           secret:
             secretName: cloudsql-instance-credentials
-
